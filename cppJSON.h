@@ -1,6 +1,8 @@
 #pragma once
 
-#include "cJSON/cJSON.h"
+#include <memory>
+
+#include <cJSON/cJSON.h>
 
 class cppJSON {
     cJSON* root;
