@@ -9,9 +9,10 @@
 
 class cppJSON {
     cJSON* root;
+	bool isRoot;
 
   protected:
-    cppJSON(cJSON* root);
+    cppJSON(cJSON* root, bool isRoot);
 
   public:
 	static std::unique_ptr<cppJSON> parse(const char* jsonString);

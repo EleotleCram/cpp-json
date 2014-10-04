@@ -6,24 +6,27 @@ std::unique_ptr<cppJSON> cppJSON::parse(const char* jsonString) {
 	cJSON* jsonStruct = cJSON_Parse(jsonString);
 
 	if(jsonStruct) {
-		jsonObject.reset(new cppJSON(jsonStruct));
+		jsonObject.reset(new cppJSON(jsonStruct, true));
 	}
 
 	return jsonObject;
 }
 
-cppJSON::cppJSON(cJSON* root) {
+cppJSON::cppJSON(cJSON* root, bool isRoot) {
 	this->root = root;
+	this->isRoot = isRoot;
 }
 
 cppJSON::~cppJSON() {
-	printf("ptr: %d\n", this->root);
-//	cJSON_Delete(this->root);
+	//printf("ptr: %d\n", this->root);
+	if(this->isRoot) {
+		cJSON_Delete(this->root);
+	}
 	this->root = 0;
 }
 
 cppJSON cppJSON::get(const char* name) {
-	return cppJSON(cJSON_GetObjectItem(this->root, name));
+	return cppJSON(cJSON_GetObjectItem(this->root, name), false);
 }
 
 int cppJSON::getInt() {
