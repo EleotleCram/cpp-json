@@ -46,3 +46,31 @@ char* cppJSON::getString() {
 void cppJSON::setString(char* v) {
 	this->root->valuestring = v;
 }
+
+cppJSONReader::cppJSONReader(std::function<int(char* buffer, size_t bufferSize)> readBytes) {
+	this->readBytes = readBytes;
+}
+#define READ_BUFFER_LENGTH 128
+std::vector<std::unique_ptr<cppJSON>> cppJSONReader::read() {
+	std::vector<std::unique_ptr<cppJSON>> jsonObjects;
+
+	char readBuffer[READ_BUFFER_LENGTH] = "";			// don't forget to pre-allocate memory
+	int bytesRead = this->readBytes(readBuffer, READ_BUFFER_LENGTH);
+
+	for(int i = 0; i < bytesRead; i++) {
+		char nextChar = readBuffer[i];
+
+		if(nextChar == '\0') {
+			//printf("|%s|\n\n", this->jsonBuffer.c_str());
+			std::unique_ptr<cppJSON> jsonObject = cppJSON::parse(this->jsonBuffer.c_str());
+			if(jsonObject) {
+				jsonObjects.push_back(std::move(jsonObject));
+			}
+			this->jsonBuffer.clear();
+		} else {
+			this->jsonBuffer += nextChar;
+		}
+	}
+
+	return jsonObjects;
+}
